@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telur Pecah</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        linear-gradient(
+            to bottom,
+            #8fdcff 0%,
+            #dff8ff 47%,
+            #78c957 48%,
+            #3d9c38 100%
+        );
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+
+.sun {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    right: 10%;
+    top: 8%;
+    border-radius: 50%;
+    background: #ffe67c;
+    box-shadow: 0 0 50px rgba(255,230,120,.8);
+}
+
+.cloud {
+    position: absolute;
+    width: 150px;
+    height: 45px;
+    top: 18%;
+    left: 12%;
+    border-radius: 50px;
+    background: rgba(255,255,255,.85);
+}
+
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
+
+.cloud::before {
+    width: 65px;
+    height: 65px;
+    left: 25px;
+    top: -30px;
+}
+
+.cloud::after {
+    width: 75px;
+    height: 75px;
+    right: 20px;
+    top: -35px;
+}
+
+.grass {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 55%;
+
+    background:
+        radial-gradient(
+            circle,
+            #65bd4d 0 4px,
+            transparent 5px
+        ),
+        linear-gradient(
+            #70c955,
+            #3e9937
+        );
+
+    background-size:
+        80px 70px,
+        100% 100%;
+}
+
+/* =========================
+   PETUNJUK
+========================= */
+
+.instruction {
+    position: absolute;
+    top: 7%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 12px 25px;
+
+    background: rgba(255,255,255,.82);
+    border-radius: 30px;
+
+    color: #59452f;
+    font-weight: bold;
+
+    z-index: 100;
+}
+
+/* =========================
+   AREA TELUR
+========================= */
+
+.scene {
+    position: absolute;
+
+    width: 360px;
+    height: 470px;
+
+    left: 50%;
+    bottom: 6%;
+
+    transform: translateX(-50%);
+}
+
+/* =========================
+   BAYANGAN
+========================= */
+
+.shadow {
+    position: absolute;
+
+    width: 190px;
+    height: 35px;
+
+    left: 85px;
+    bottom: 35px;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.22);
+
+    filter: blur(8px);
+}
+
+/* =========================
+   TELUR
+========================= */
+
+.egg {
+    position: absolute;
+
+    width: 175px;
+    height: 230px;
+
+    left: 92px;
+    bottom: 65px;
+
+    cursor: pointer;
+
+    transform-origin: center bottom;
+
+    z-index: 20;
+}
+
+.egg-top,
+.egg-bottom {
+    position: absolute;
+
+    width: 175px;
+    height: 230px;
+
+    background:
+        radial-gradient(
+            circle at 35% 22%,
+            white 0 5px,
+            transparent 6px
+        ),
+        linear-gradient(
+            135deg,
+            #fffef8,
+            #f0d99f
+        );
+
+    border: 4px solid #c8a95e;
+
+    box-shadow:
+        inset -15px -15px 25px rgba(120,80,20,.12),
+        0 8px 15px rgba(0,0,0,.18);
+}
+
+/* Bagian atas telur */
+
+.egg-top {
+    border-radius:
+        52% 48% 45% 45%
+        / 58% 58% 42% 42%;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 55%,
+        91% 60%,
+        82% 55%,
+        73% 64%,
+        64% 57%,
+        54% 64%,
+        45% 57%,
+        35% 64%,
+        25% 56%,
+        14% 62%,
+        0 56%
+    );
+}
+
+/* Bagian bawah telur */
+
+.egg-bottom {
+    border-radius:
+        45% 48% 55% 55%
+        / 40% 42% 60% 60%;
+
+    clip-path: polygon(
+        0 55%,
+        14% 62%,
+        25% 56%,
+        35% 64%,
+        45% 57%,
+        54% 64%,
+        64% 57%,
+        73% 64%,
+        82% 55%,
+        91% 60%,
+        100% 55%,
+        100% 100%,
+        0 100%
+    );
+}
+
+/* =========================
+   PERCikan PUTIH TELUR
+========================= */
+
+.splash {
+    position: absolute;
+
+    width: 13px;
+    height: 13px;
+
+    left: 174px;
+    top: 245px;
+
+    border-radius: 50%;
+
+    background: #fffef5;
+    border: 2px solid #e4d9b8;
+
+    opacity: 0;
+
+    /*
+       Percikan berada di depan telur,
+       tetapi tidak akan menghalangi kertas.
+    */
+    z-index: 30;
+}
+
+.s1  { --x:-120px; --y:-80px; }
+.s2  { --x:-90px;  --y:-130px; }
+.s3  { --x:-50px;  --y:-155px; }
+.s4  { --x:0px;    --y:-175px; }
+.s5  { --x:55px;   --y:-150px; }
+.s6  { --x:100px;  --y:-120px; }
+.s7  { --x:130px;  --y:-65px; }
+.s8  { --x:-145px; --y:-35px; }
+.s9  { --x:145px;  --y:-30px; }
+.s10 { --x:-110px; --y:30px; }
+.s11 { --x:115px;  --y:35px; }
+.s12 { --x:70px;   --y:-190px; }
+
+/* =========================
+   KERTAS
+========================= */
+
+.paper {
+    position: absolute;
+
+    /*
+       Posisi awal tepat di dalam telur.
+    */
+    left: 95px;
+    bottom: 135px;
+
+    width: 170px;
+    min-height: 125px;
+
+    padding: 22px 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffef7,
+            #f7eed5
+        );
+
+    border: 2px solid #d2c49d;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.3);
+
+    color: #46372a;
+
+    text-align: center;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    opacity: 0;
+
+    /*
+       Kertas dibuat berada PALING DEPAN.
+       Tidak akan tertutup telur.
+    */
+    z-index: 999;
+
+    transform:
+        translateY(70px)
+        scale(.45)
+        rotate(-4deg);
+}
+
+/* Lipatan kertas */
+
+.paper::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    border-top: 30px solid #e2d8ba;
+    border-left: 30px solid transparent;
+}
+
+/* =========================
+   ANIMASI GETAR 1.5 DETIK
+========================= */
+
+.scene.open .egg {
+    animation: eggShake 1.5s ease-in-out forwards;
+}
+
+@keyframes eggShake {
+
+    0%   { transform: translateX(0) rotate(0); }
+    5%   { transform: translateX(-7px) rotate(-6deg); }
+    10%  { transform: translateX(7px) rotate(7deg); }
+    15%  { transform: translateX(-8px) rotate(-8deg); }
+    20%  { transform: translateX(8px) rotate(8deg); }
+    25%  { transform: translateX(-7px) rotate(-7deg); }
+    30%  { transform: translateX(7px) rotate(7deg); }
+    35%  { transform: translateX(-8px) rotate(-8deg); }
+    40%  { transform: translateX(8px) rotate(8deg); }
+    45%  { transform: translateX(-7px) rotate(-7deg); }
+    50%  { transform: translateX(7px) rotate(7deg); }
+    55%  { transform: translateX(-6px) rotate(-6deg); }
+    60%  { transform: translateX(6px) rotate(6deg); }
+    65%  { transform: translateX(-5px) rotate(-5deg); }
+    70%  { transform: translateX(5px) rotate(5deg); }
+    75%  { transform: translateX(-4px) rotate(-4deg); }
+    80%  { transform: translateX(4px) rotate(4deg); }
+    90%  { transform: translateX(-2px) rotate(-2deg); }
+    100% { transform: translateX(0) rotate(0); }
+}
+
+/* =========================
+   TELUR PECAH
+========================= */
+
+.scene.open .egg-top {
+    animation:
+        eggTopBreak
+        .9s
+        1.5s
+        cubic-bezier(.15,.8,.2,1)
+        forwards;
+}
+
+.scene.open .egg-bottom {
+    animation:
+        eggBottomBreak
+        .9s
+        1.5s
+        cubic-bezier(.15,.8,.2,1)
+        forwards;
+}
+
+@keyframes eggTopBreak {
+
+    0% {
+        transform:
+            translate(0,0)
+            rotate(0);
+    }
+
+    100% {
+        transform:
+            translate(-55px,-95px)
+            rotate(-20deg);
+    }
+}
+
+@keyframes eggBottomBreak {
+
+    0% {
+        transform:
+            translate(0,0)
+            rotate(0);
+    }
+
+    100% {
+        transform:
+            translate(45px,55px)
+            rotate(13deg);
+    }
+}
+
+/* =========================
+   PERCikan
+========================= */
+
+.scene.open .splash {
+    animation:
+        splashFly
+        .85s
+        1.5s
+        cubic-bezier(.15,.8,.2,1)
+        forwards;
+}
+
+@keyframes splashFly {
+
+    0% {
+        opacity: 1;
+
+        transform:
+            translate(0,0)
+            scale(.4);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(var(--x),var(--y))
+            scale(1.3);
+    }
+}
+
+/* =========================
+   KERTAS KELUAR KE DEPAN
+========================= */
+
+.scene.open .paper {
+    animation:
+        paperFront
+        1.8s
+        1.65s
+        cubic-bezier(.15,.85,.2,1)
+        forwards;
+}
+
+@keyframes paperFront {
+
+    /*
+       Awal:
+       kertas benar-benar berada di dalam telur.
+    */
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(75px)
+            translateZ(0)
+            scale(.42)
+            rotate(-5deg);
+    }
+
+    /*
+       Mulai terlihat setelah telur pecah.
+    */
+    20% {
+        opacity: 1;
+    }
+
+    /*
+       Keluar dari badan telur.
+    */
+    45% {
+        transform:
+            translateY(-55px)
+            translateZ(50px)
+            scale(.75)
+            rotate(3deg);
+    }
+
+    /*
+       Maju ke depan dan membesar.
+    */
+    75% {
+        transform:
+            translateY(-150px)
+            translateZ(100px)
+            scale(1.05)
+            rotate(-2deg);
+    }
+
+    /*
+       Posisi akhir:
+       kertas berada sepenuhnya di depan telur.
+    */
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(-190px)
+            translateZ(150px)
+            scale(1.15)
+            rotate(0deg);
+    }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:500px) {
+
+    .scene {
+        transform:
+            translateX(-50%)
+            scale(.82);
+
+        bottom: 7%;
+    }
+
+    .instruction {
+        width: 85%;
+        text-align: center;
+        font-size: 14px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sun"></div>
+<div class="cloud"></div>
+<div class="grass"></div>
+
+<div class="instruction">
+    Klik telur untuk membuka
+</div>
+
+<div class="scene" id="scene">
+
+    <div class="shadow"></div>
+
+    <!-- PERCikan PUTIH TELUR -->
+    <div class="splash s1"></div>
+    <div class="splash s2"></div>
+    <div class="splash s3"></div>
+    <div class="splash s4"></div>
+    <div class="splash s5"></div>
+    <div class="splash s6"></div>
+    <div class="splash s7"></div>
+    <div class="splash s8"></div>
+    <div class="splash s9"></div>
+    <div class="splash s10"></div>
+    <div class="splash s11"></div>
+    <div class="splash s12"></div>
+
+    <!-- KERTAS -->
+    <div class="paper">
+        <b>
+            all tawuu ell kesell
+            garaa garaa tadii
+            sowwy
+        </b>
+    </div>
+
+    <!-- TELUR -->
+    <div class="egg" id="egg">
+
+        <div class="egg-top"></div>
+        <div class="egg-bottom"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+const egg = document.getElementById("egg");
+const scene = document.getElementById("scene");
+
+let alreadyOpened = false;
+
+egg.addEventListener("click", function () {
+
+    if (alreadyOpened) return;
+
+    alreadyOpened = true;
+
+    scene.classList.add("open");
+
+});
+
+</script>
+
+</body>
+</html>
+```
